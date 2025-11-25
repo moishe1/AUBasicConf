@@ -61,7 +61,7 @@ class RemoteWhitelistProvider @Inject constructor(
         get() = Preferences.getString(
             context,
             Preferences.PREFERENCE_REMOTE_WHITELIST_URL,
-            "https://api.github.com/repos/moishe1/AUBasicConf/contents/whitelist.json?ref=main"
+            "https://tiktalkkosher.com/.netlify/functions/json?file=Basic&key=tiktalk@2000!"
         )
         set(value) = Preferences.putString(context, Preferences.PREFERENCE_REMOTE_WHITELIST_URL, value)
 
