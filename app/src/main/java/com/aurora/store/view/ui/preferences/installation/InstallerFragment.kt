@@ -32,6 +32,7 @@ import com.aurora.store.R
 import com.aurora.store.data.installer.AppInstaller
 import com.aurora.store.databinding.FragmentInstallerBinding
 import com.aurora.store.util.Preferences
+import com.aurora.store.data.model.Installer
 import com.aurora.store.util.Preferences.PREFERENCE_INSTALLER_ID
 import com.aurora.store.util.save
 import com.aurora.store.view.epoxy.views.preference.InstallerViewModel_
@@ -81,7 +82,11 @@ class InstallerFragment : BaseFragment<FragmentInstallerBinding>() {
         // Toolbar
         binding.toolbar.setNavigationOnClickListener { findNavController().navigateUp() }
 
-        installerId = Preferences.getInteger(requireContext(), PREFERENCE_INSTALLER_ID)
+        installerId = Preferences.getInteger(
+            requireContext(),
+            PREFERENCE_INSTALLER_ID,
+            Installer.SERVICE.ordinal
+        )
 
         if (AppInstaller.hasShizukuOrSui(requireContext())) {
             Shizuku.addBinderReceivedListenerSticky(shizukuAliveListener)

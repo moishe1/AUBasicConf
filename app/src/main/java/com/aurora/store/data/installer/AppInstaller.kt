@@ -63,7 +63,10 @@ class AppInstaller @Inject constructor(
         const val EXTRA_DISPLAY_NAME = "com.aurora.store.data.installer.AppInstaller.EXTRA_DISPLAY_NAME"
 
         fun getCurrentInstaller(context: Context): Installer {
-            return Installer.entries[Preferences.getInteger(context, PREFERENCE_INSTALLER_ID)]
+            // Default to the Aurora Services (privileged) installer when unset
+            return Installer.entries[
+                Preferences.getInteger(context, PREFERENCE_INSTALLER_ID, Installer.SERVICE.ordinal)
+            ]
         }
 
         fun getAvailableInstallersInfo(context: Context): List<InstallerInfo> {
@@ -114,16 +117,24 @@ class AppInstaller @Inject constructor(
         }
 
         fun hasAuroraService(context: Context): Boolean {
-            return try {
-                val packageInfo = PackageUtil.getPackageInfo(
-                    context,
-                    ServiceInstaller.PRIVILEGED_EXTENSION_PACKAGE_NAME
-                )
-                val version = PackageInfoCompat.getLongVersionCode(packageInfo)
+            return getAuroraServicePackage(context) != null
+        }
 
-                packageInfo.applicationInfo!!.enabled && version >= 9
-            } catch (exception: Exception) {
-                false
+        /**
+         * Returns the first installed & enabled privileged installer companion
+         * (resetguard or the original Aurora Services) with a supported version,
+         * or null if none qualify.
+         */
+        fun getAuroraServicePackage(context: Context): String? {
+            return ServiceInstaller.PRIVILEGED_EXTENSION_PACKAGE_NAMES.firstOrNull { pkg ->
+                try {
+                    val packageInfo = PackageUtil.getPackageInfo(context, pkg)
+                    val version = PackageInfoCompat.getLongVersionCode(packageInfo)
+
+                    packageInfo.applicationInfo!!.enabled && version >= 9
+                } catch (exception: Exception) {
+                    false
+                }
             }
         }
 

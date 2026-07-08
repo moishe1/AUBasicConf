@@ -61,14 +61,25 @@ class ServiceInstaller @Inject constructor(
     companion object {
         const val ACTION_INSTALL_REPLACE_EXISTING = 2
         const val PRIVILEGED_EXTENSION_PACKAGE_NAME = "com.aurora.services"
+        const val PRIVILEGED_EXTENSION_PACKAGE_NAME_ALT = "com.resetguard"
         const val PRIVILEGED_EXTENSION_SERVICE_INTENT = "com.aurora.services.IPrivilegedService"
+
+        /**
+         * Privileged installer companion packages, in priority order. Either the
+         * resetguard build or the original Aurora Services can service installs;
+         * whichever is installed & valid is used at runtime.
+         */
+        val PRIVILEGED_EXTENSION_PACKAGE_NAMES = listOf(
+            PRIVILEGED_EXTENSION_PACKAGE_NAME_ALT,
+            PRIVILEGED_EXTENSION_PACKAGE_NAME
+        )
 
         val installerInfo: InstallerInfo
             get() = InstallerInfo(
                 id = 3,
                 installer = Installer.SERVICE,
-                packageNames = listOf(PRIVILEGED_EXTENSION_PACKAGE_NAME),
-                installerPackageNames = listOf(PRIVILEGED_EXTENSION_PACKAGE_NAME),
+                packageNames = PRIVILEGED_EXTENSION_PACKAGE_NAMES,
+                installerPackageNames = PRIVILEGED_EXTENSION_PACKAGE_NAMES,
                 title = R.string.pref_install_mode_services,
                 subtitle = R.string.services_installer_subtitle,
                 description = R.string.services_installer_desc
@@ -80,20 +91,22 @@ class ServiceInstaller @Inject constructor(
     override fun install(download: Download) {
         super.install(download)
 
+        val extensionPackage = AppInstaller.getAuroraServicePackage(context)
         when {
             isAlreadyQueued(download.packageName) -> {
                 Log.i(TAG, "${download.packageName} already queued")
             }
 
-            PackageUtil.isInstalled(context, PRIVILEGED_EXTENSION_PACKAGE_NAME) -> {
+            extensionPackage != null -> {
                 Log.i(TAG, "Received service install request for ${download.packageName}")
                 val fileList = getFiles(download.packageName, download.versionCode)
                 xInstall(
+                    extensionPackage,
                     download.packageName,
                     fileList.map { file ->
                         getUri(file).also { uri ->
                             context.grantUriPermission(
-                                PRIVILEGED_EXTENSION_PACKAGE_NAME,
+                                extensionPackage,
                                 uri,
                                 Intent.FLAG_GRANT_READ_URI_PERMISSION
                             )
@@ -113,7 +126,12 @@ class ServiceInstaller @Inject constructor(
         }
     }
 
-    private fun xInstall(packageName: String, uriList: List<Uri>, fileList: List<String>) {
+    private fun xInstall(
+        extensionPackage: String,
+        packageName: String,
+        uriList: List<Uri>,
+        fileList: List<String>
+    ) {
         executor.execute {
             val readyWithAction = AtomicBoolean(false)
             Handler(Looper.getMainLooper()).post {
@@ -209,7 +227,7 @@ class ServiceInstaller @Inject constructor(
                 }
 
                 val intent = Intent(PRIVILEGED_EXTENSION_SERVICE_INTENT)
-                intent.setPackage(PRIVILEGED_EXTENSION_PACKAGE_NAME)
+                intent.setPackage(extensionPackage)
 
                 context.bindService(
                     intent,

@@ -47,12 +47,32 @@ class DeviceInfoDialog : DialogFragment() {
             "unknown"
         }
 
+    /**
+     * IMEI is only readable by privileged system apps (READ_PRIVILEGED_PHONE_STATE) or
+     * platform-signed apps; otherwise this shows "unavailable".
+     */
+    @get:android.annotation.SuppressLint("MissingPermission", "HardwareIds")
+    private val deviceImei: String
+        get() = try {
+            val tm = requireContext().getSystemService(android.content.Context.TELEPHONY_SERVICE)
+                as? android.telephony.TelephonyManager
+            val imei = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                tm?.imei
+            } else {
+                @Suppress("DEPRECATION") tm?.deviceId
+            }
+            imei?.takeIf { it.isNotBlank() } ?: "unavailable"
+        } catch (e: Exception) {
+            "unavailable"
+        }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val view = layoutInflater.inflate(R.layout.dialog_device_info, null)
 
         val phoneInputLayout = view.findViewById<TextInputLayout>(R.id.phoneInputLayout)
         val serialValue = view.findViewById<TextView>(R.id.serialValue)
         val deviceValue = view.findViewById<TextView>(R.id.deviceValue)
+        val imeiValue = view.findViewById<TextView>(R.id.imeiValue)
         val copySerialButton = view.findViewById<MaterialButton>(R.id.copySerialButton)
 
         phoneInputLayout.editText?.setText(
@@ -60,6 +80,7 @@ class DeviceInfoDialog : DialogFragment() {
         )
         serialValue.text = deviceSerial
         deviceValue.text = "${Build.MANUFACTURER} ${Build.MODEL}"
+        imeiValue.text = deviceImei
 
         copySerialButton.setOnClickListener {
             requireContext().copyToClipBoard(deviceSerial)

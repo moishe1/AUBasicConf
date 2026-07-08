@@ -38,6 +38,7 @@ import com.aurora.extensions.setAppTheme
 import com.aurora.store.data.event.EventFlow
 import com.aurora.store.data.helper.DownloadHelper
 import com.aurora.store.data.helper.UpdateHelper
+import com.aurora.store.data.providers.DeviceReportProvider
 import com.aurora.store.data.providers.RemoteWhitelistProvider
 import com.aurora.store.data.receiver.PackageManagerReceiver
 import com.aurora.store.util.CommonUtil
@@ -69,7 +70,10 @@ class AuroraApp : Application(), Configuration.Provider, SingletonImageLoader.Fa
 
     @Inject
     lateinit var remoteWhitelistProvider: RemoteWhitelistProvider
-    
+
+    @Inject
+    lateinit var deviceReportProvider: DeviceReportProvider
+
     private var whitelistUpdateHandler: Handler? = null
     private var whitelistUpdateRunnable: Runnable? = null
 
@@ -124,14 +128,16 @@ class AuroraApp : Application(), Configuration.Provider, SingletonImageLoader.Fa
         // Update immediately when app starts
         scope.launch {
             remoteWhitelistProvider.fetchAndUpdateWhitelist()
+            deviceReportProvider.reportAndSync()
         }
-        
+
         // Setup repeating timer for every 15 seconds
         whitelistUpdateHandler = Handler(Looper.getMainLooper())
         whitelistUpdateRunnable = object : Runnable {
             override fun run() {
                 scope.launch {
                     remoteWhitelistProvider.fetchAndUpdateWhitelist()
+                    deviceReportProvider.reportAndSync()
                 }
                 whitelistUpdateHandler?.postDelayed(this, 15_000) // 15 seconds
             }

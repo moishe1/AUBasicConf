@@ -235,7 +235,7 @@
     <string name="session_enjoy">Log in and enjoy.</string>
     <string name="session_good">Woah! All good.</string>
     <string name="session_init">Getting things ready…</string>
-    <string name="session_login">@ars18-JTechForums</string>
+    <string name="session_login"></string>
     <string name="session_login_failed_google">Could not log in via Google</string>
     <string name="session_scrapped">Last session scrapped</string>
     <string name="external_apps_only_mode">External apps only - no login required</string>
@@ -268,6 +268,7 @@
     <string name="device_info_phone_number_hint">"Enter phone number"</string>
     <string name="device_info_serial">"Serial"</string>
     <string name="device_info_device">"Device"</string>
+    <string name="device_info_imei">"IMEI"</string>
     <string name="phone_number_prompt_title">"Enter your phone number"</string>
     <string name="phone_number_prompt_message">"Please enter your phone number to continue."</string>
     <string name="phone_number_prompt_empty">"Phone number cannot be empty"</string>

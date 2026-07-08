@@ -38,11 +38,25 @@
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
+    <!-- Silent uninstall without a confirmation dialog. Signature|privileged: only granted to a
+         privileged system app (/system/priv-app + privapp allowlist) or platform-signed app.
+         Falls back to the system uninstall UI when not privileged. -->
+    <uses-permission
+        android:name="android.permission.DELETE_PACKAGES"
+        tools:ignore="ProtectedPermissions" />
 
     <uses-permission android:name="android.permission.ENFORCE_UPDATE_OWNERSHIP" />
     <uses-permission android:name="android.permission.UPDATE_PACKAGES_WITHOUT_USER_ACTION" />
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- IMEI / device identifiers. READ_PRIVILEGED_PHONE_STATE is only granted to privileged
+         system apps (/system/priv-app + privapp allowlist) or platform-signed apps; on a
+         non-privileged build IMEI reads return "unavailable". -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission
+        android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"
+        tools:ignore="ProtectedPermissions" />
 
     <uses-permission
         android:name="android.permission.USE_CREDENTIALS"
