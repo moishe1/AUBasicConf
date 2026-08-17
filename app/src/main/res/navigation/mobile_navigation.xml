@@ -35,6 +35,11 @@
         android:label="@string/title_apps"
         tools:layout="@layout/fragment_updates" />
         <fragment
+        android:id="@+id/requestsFragment"
+        android:name="com.aurora.store.view.ui.requests.RequestsFragment"
+        android:label="@string/title_requests"
+        tools:layout="@layout/fragment_requests" />
+        <fragment
         android:id="@+id/updatesFragment"
         android:name="com.aurora.store.view.ui.updates.UpdatesFragment"
         android:label="@string/title_updates"

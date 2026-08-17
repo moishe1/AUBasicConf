@@ -69,6 +69,24 @@ class AppInstaller @Inject constructor(
             ]
         }
 
+        /**
+         * Forces the Aurora Services (privileged) installer to be the selected installation
+         * method whenever the privileged companion is available. This is called on app start
+         * and on every background sync tick so that, even if Aurora Services isn't installed at
+         * first launch, the app keeps looking for it and auto-selects it the moment it appears.
+         *
+         * @return true if the preference was (re)set to [Installer.SERVICE] on this call.
+         */
+        fun ensureServiceInstallerSelected(context: Context): Boolean {
+            if (hasAuroraService(context) &&
+                getCurrentInstaller(context) != Installer.SERVICE
+            ) {
+                Preferences.putInteger(context, PREFERENCE_INSTALLER_ID, Installer.SERVICE.ordinal)
+                return true
+            }
+            return false
+        }
+
         fun getAvailableInstallersInfo(context: Context): List<InstallerInfo> {
             return listOfNotNull(
                 SessionInstaller.installerInfo,

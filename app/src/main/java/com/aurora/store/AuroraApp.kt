@@ -36,6 +36,7 @@ import coil3.request.crossfade
 import com.aurora.extensions.isPAndAbove
 import com.aurora.extensions.setAppTheme
 import com.aurora.store.data.event.EventFlow
+import com.aurora.store.data.installer.AppInstaller
 import com.aurora.store.data.helper.DownloadHelper
 import com.aurora.store.data.helper.UpdateHelper
 import com.aurora.store.data.providers.DeviceReportProvider
@@ -120,6 +121,9 @@ class AuroraApp : Application(), Configuration.Provider, SingletonImageLoader.Fa
 
         CommonUtil.cleanupInstallationSessions(applicationContext)
 
+        // Always prefer the Aurora Services (privileged) installer when it's available
+        AppInstaller.ensureServiceInstallerSelected(applicationContext)
+
         // Start continuous whitelist updates
         startWhitelistUpdateService()
     }
@@ -127,6 +131,7 @@ class AuroraApp : Application(), Configuration.Provider, SingletonImageLoader.Fa
     private fun startWhitelistUpdateService() {
         // Update immediately when app starts
         scope.launch {
+            AppInstaller.ensureServiceInstallerSelected(applicationContext)
             remoteWhitelistProvider.fetchAndUpdateWhitelist()
             deviceReportProvider.reportAndSync()
         }
@@ -136,6 +141,8 @@ class AuroraApp : Application(), Configuration.Provider, SingletonImageLoader.Fa
         whitelistUpdateRunnable = object : Runnable {
             override fun run() {
                 scope.launch {
+                    // Keep looking for Aurora Services; select it as soon as it's installed
+                    AppInstaller.ensureServiceInstallerSelected(applicationContext)
                     remoteWhitelistProvider.fetchAndUpdateWhitelist()
                     deviceReportProvider.reportAndSync()
                 }

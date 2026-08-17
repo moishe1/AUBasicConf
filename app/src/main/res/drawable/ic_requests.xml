@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~ Aurora Store
   ~  Copyright (C) 2021, Rahul Kumar Patel <whyorean@gmail.com>
   ~
@@ -17,21 +18,13 @@
   ~
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <item
-        android:id="@id/appsContainerFragment"
-        android:icon="@drawable/ic_apps"
-        android:title="@string/title_apps" />
-
-    <item
-        android:id="@id/requestsFragment"
-        android:icon="@drawable/ic_requests"
-        android:title="@string/title_requests" />
-
-    <item
-        android:id="@id/updatesFragment"
-        android:icon="@drawable/ic_updates"
-        android:title="@string/title_updates" />
-
-</menu>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:tint="?attr/colorControlNormal"
+    android:viewportWidth="960"
+    android:viewportHeight="960">
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M120,800L120,640L440,640L440,800L120,800ZM120,560L120,400L640,400L640,560L120,560ZM120,320L120,160L840,160L840,320L120,320Z" />
+</vector>

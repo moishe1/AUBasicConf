@@ -23,6 +23,7 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.aurora.store.data.installer.AppInstaller
 import com.aurora.store.data.providers.RemoteWhitelistProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -36,6 +37,8 @@ class RemoteWhitelistWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
         return try {
+            // Always prefer the Aurora Services installer once it's available
+            AppInstaller.ensureServiceInstallerSelected(applicationContext)
             if (remoteWhitelistProvider.shouldUpdate()) {
                 val success = remoteWhitelistProvider.fetchAndUpdateWhitelist()
                 if (success) Result.success() else Result.retry()
